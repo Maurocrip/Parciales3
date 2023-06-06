@@ -1,0 +1,3 @@
+{"precio":59666,"marca":"FateO","medidas":"195-55-R18","id":100,"pathsFoto":".\/neumaticos\/imagenes\/FateO101122.png"}
+{"precio":1,"marca":"pirelli_modif","medidas":"desconocidas_modif","id":100,"pathsFoto":""}
+{"precio":3242,"marca":"z","medidas":"z","id":100,"pathsFoto":".\/neumaticos\/imagenes\/z095604.png"}

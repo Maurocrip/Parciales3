@@ -2,7 +2,7 @@ namespace ModeloParcial
 {
     const xhttp : XMLHttpRequest = new XMLHttpRequest();
     const formData : FormData = new FormData();
-    export class Manejadora implements Iparte2
+    export class Manejadora implements Iparte2 , Iparte3
     {
         public static AgregarNeumaticoJSON()
         {
@@ -10,7 +10,7 @@ namespace ModeloParcial
             let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
             let precio: number = (Number)((<HTMLInputElement> document.getElementById("precio")).value);
         
-            xhttp.open("POST", "/parcial_uno/backend/altaNeumaticoJSON.php", true);
+            xhttp.open("POST", "./backend/altaNeumaticoJSON.php", true);
 
             formData.append('marca', marca);
             formData.append('medidas', medidas);
@@ -28,7 +28,7 @@ namespace ModeloParcial
 
         public static MostrarNeumaticosJSON()
         {
-            xhttp.open("GET", "/parcial_uno/backend/listadoNeumaticosJSON.php", true);
+            xhttp.open("GET", "./backend/listadoNeumaticosJSON.php", true);
                 
             xhttp.send();
 
@@ -48,7 +48,7 @@ namespace ModeloParcial
 
         public static VerificarNeumaticoJSON()
         {
-            xhttp.open("POST", "/parcial_uno/backend/verificarNeumaticoJSON.php", true);
+            xhttp.open("POST", "./backend/verificarNeumaticoJSON.php", true);
                 
             let marca: string = (<HTMLInputElement> document.getElementById("marca")).value;
             let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
@@ -66,13 +66,14 @@ namespace ModeloParcial
             }
         }
 
+        //-----------------------------------------------------------------------------------bd----------------------------------------------------
         public static AgregarNeumaticoSinFoto()
         {
             let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
             let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
             let precio: number = (Number)((<HTMLInputElement> document.getElementById("precio")).value);
         
-            xhttp.open("POST", "/parcial_uno/backend/agregarNeumaticoSinFoto.php", true);
+            xhttp.open("POST", "./backend/agregarNeumaticoSinFoto.php", true);
 
             let neumatico = {
                 marca: marca,
@@ -92,7 +93,7 @@ namespace ModeloParcial
 
         public static MostrarNeumaticosBD()
         {
-            xhttp.open("GET", "/parcial_uno/backend/listadoNeumaticoBD.php", true);
+            xhttp.open("GET", "./backend/listadoNeumaticoBD.php", true);
                 
             xhttp.send();
 
@@ -100,13 +101,29 @@ namespace ModeloParcial
                 if (xhttp.readyState == 4 && xhttp.status == 200) {
                     console.log(xhttp.responseText);
                     let objet : any = JSON.parse(xhttp.responseText);
-                    let tabla : string =" <TABLE BORDER><TR><TH>id</TH><TH>Marca</TH> <TH>Medidas</TH> <TH>Precio</TH> <TH>PATH FOTO</TH>  <TH>FOTO</TH></TR>";
-                    objet.forEach(element => {
-                        tabla +=`<tr><td> ${element.id }</td><td> ${element.marca} </td><td> ${element.medidas} </td><td> ${element.precio} </td><td> ${element.foto} </td><td> <img src=\"${element.foto}\" width=\"50\" height=\"50\" /> </td></tr>`;
-                    })
-                    tabla += `</TABLE>`;
+                    let tabla : string =" <TABLE BORDER><TR><TH>id</TH><TH>Marca</TH> <TH>Medidas</TH> <TH>Precio</TH> <TH>PATH FOTO</TH> <TH>FOTO</TH>  <TH>ACCIONES</TH></TR>";
+                    for (let index = 0; index < objet.length; index++) {
+                        tabla += `<TR><TD>${objet[index].id}</TD><TD>${objet[index].marca}</TD> <TD>${objet[index].medidas}</TD> <TD>${objet[index].precio}</td><td> ${objet[index].foto} </td><td> <img src=\"${objet[index].foto}\" width=\"50\" height=\"50\" /> </td>
+                        <td><input type="button" value="Llenar datos" name="btn-llenarDatos" data-obj= ${JSON.stringify(objet[index])}
+                        ></td></TD> </TR>`;                    
+                    }
+                    tabla += `</TABLE>`;            
                     (<HTMLInputElement> document.getElementById("divTabla")).innerHTML = tabla;
-                    (<HTMLInputElement> document.getElementById("idNeumatico")).readOnly = false;
+                    
+                    document.getElementsByName("btn-llenarDatos").forEach(element => 
+                    {
+                        element.addEventListener("click", () =>
+                        {
+                            let json : any = element.getAttribute("data-obj");
+                            let obj : any = JSON.parse(json);
+                
+                            (<HTMLInputElement>document.getElementById("idNeumatico")).value = obj.id;
+                            (<HTMLInputElement>document.getElementById("marca")).value = obj.marca;
+                            (<HTMLInputElement>document.getElementById("medidas")).value = obj.medidas;
+                            (<HTMLInputElement>document.getElementById("precio")).value = obj.precio; 
+                        }
+                        );
+                    });
                 }
             }
         }
@@ -123,17 +140,41 @@ namespace ModeloParcial
 
             funccion.EliminarNeumatico();
         }
+        public static VerificarNeumaticoBD()
+        {
+            let funccion = new Manejadora();
+
+            funccion.VerificarNeumaticoBD();
+        }
+        public static AgregarNeumaticoFoto()
+        {
+            let funccion = new Manejadora();
+
+            funccion.AgregarNeumaticoFoto();
+        }
+        public static BorrarNeumaticoFoto()
+        {
+            let funccion = new Manejadora();
+
+            funccion.BorrarNeumaticoFoto();
+        }
+        public static ModificarNeumaticoBDFoto()
+        {
+            let funccion = new Manejadora();
+
+            funccion.ModificarNeumaticoBDFoto();
+        }
 
         EliminarNeumatico()
         {
-            xhttp.open("POST", "/parcial_uno/backend/eliminarNeumaticoBD.php", true);
+            xhttp.open("POST", "./backend/eliminarNeumaticoBD.php", true);
                 
             let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
             let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
             let precio: number = (Number)((<HTMLInputElement> document.getElementById("precio")).value);
             let id: number = (Number)((<HTMLInputElement> document.getElementById("idNeumatico")).value);
 
-            if(window.confirm("Seguro quieres eliminar el neumatico marcca: " + marca + " medida: " + medidas))
+            if(window.confirm("Seguro quieres eliminar el neumatico marca: " + marca + " medida: " + medidas))
             {
                 let neumatico = {
                     marca: marca,
@@ -157,7 +198,7 @@ namespace ModeloParcial
 
         ModificarNeumatico()
         {
-            xhttp.open("POST", "/parcial_uno/backend/modificarNeumaticoBD.php", true);
+            xhttp.open("POST", "./backend/modificarNeumaticoBD.php", true);
                 
             let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
             let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
@@ -188,6 +229,94 @@ namespace ModeloParcial
                     }
                 }
             }
+        }
+
+        VerificarNeumaticoBD() : any
+        {
+            let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
+            let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
+            
+            let neumatico = {
+                marca: marca,
+                medidas: medidas,
+            };
+
+            xhttp.open("POST", "./backend/verificarNeumaticoBD.php", true);
+
+            formData.append('obj_neumatico', JSON.stringify(neumatico));
+            xhttp.send(formData);
+
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    console.log(xhttp.responseText);
+                    alert(xhttp.responseText);
+                    
+                }
+            }
+        }
+
+        AgregarNeumaticoFoto() : any
+        {
+            let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
+            let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
+            let precio: number = (Number)((<HTMLInputElement> document.getElementById("precio")).value);
+            let foto: any = (<HTMLInputElement> document.getElementById("foto"));
+        
+            xhttp.open("POST", "./backend/agregarNeumaticoBD.php", true);
+
+            formData.append('marca', marca);
+            formData.append('medidas', medidas);
+            formData.append('precio', precio.toString())
+            formData.append('foto', foto.files[0]);
+            xhttp.setRequestHeader("enctype", "multipart/form-data");
+            xhttp.send(formData);
+
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    alert(xhttp.responseText);
+                    console.log(xhttp.responseText);
+                    Manejadora.MostrarNeumaticosBD();
+                }
+            }
+        }
+
+        BorrarNeumaticoFoto() : any
+        {
+            xhttp.open("POST", "./backend/eliminarNeumaticoBDFoto.php", true);
+                
+            let marca : string = (<HTMLInputElement> document.getElementById("marca")).value;
+            let medidas: string = (<HTMLInputElement> document.getElementById("medidas")).value;
+            let precio: number = (Number)((<HTMLInputElement> document.getElementById("precio")).value);
+            let id: number = (Number)((<HTMLInputElement> document.getElementById("idNeumatico")).value);
+            let foto: any = (<HTMLInputElement> document.getElementById("foto"));
+
+            if(window.confirm("Seguro quieres eliminar el neumatico marca: " + marca + " medida: " + medidas))
+            {
+                let neumatico = {
+                    marca: marca,
+                    medidas: medidas,
+                    precio:precio,
+                    id:id
+                };
+    
+                formData.append('foto', foto.files[0]);
+                xhttp.setRequestHeader("enctype", "multipart/form-data");
+                formData.append('neumatico_json', JSON.stringify(neumatico));
+                xhttp.send(formData);
+    
+                xhttp.onreadystatechange = () => {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        console.log(xhttp.responseText);
+                        alert(xhttp.responseText);
+                        Manejadora.MostrarNeumaticosBD();
+                    }
+                }
+            }
+
+        }
+        ModificarNeumaticoBDFoto() : any
+        {
+
         }
     }
 }
