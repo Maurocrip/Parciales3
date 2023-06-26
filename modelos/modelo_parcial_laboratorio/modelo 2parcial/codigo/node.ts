@@ -1,4 +1,3 @@
-//npm i --save-dev @types/node  para descargar todo lo de rquier
 
 const express = require('express');
 
